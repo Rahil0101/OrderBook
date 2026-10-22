@@ -5,6 +5,8 @@ project(OrderBook LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+# Your normal interactive application
+
 
 # Download and configure GoogleTest
 include(FetchContent)
@@ -18,18 +20,21 @@ FetchContent_MakeAvailable(googletest)
 
 # Compile the OrderBook implementation into a reusable library
 add_library(orderbook_lib
-    src/Orderbook.cpp
+    src/OrderBook.cpp
+    src/OrderHistory.cpp
+    src/Trade.cpp
 )
+
+
 
 target_include_directories(orderbook_lib
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# Your normal interactive application
 add_executable(orderbook
     src/main.cpp
-    src/OrderBook.cpp
 )
+
 
 target_link_libraries(orderbook PRIVATE orderbook_lib)
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "Order.hpp"
+#include "OrderHistory.hpp"
 #include<map>
 #include<list>
 
@@ -9,11 +10,13 @@ class OrderBook {
     std::map<int,std::list<Order>> sellMap;
     std::unordered_map <int,DeleteDetails> deleteMap;
     int order_id , MAX_BAR , maxi;
+    std::unordered_map <int , OrderHistory> history_map;
+    int trade_id ;
 
     public:
 
 
-    OrderBook(int order_id , int MAX_BAR , int maxi);
+    OrderBook(int order_id , int MAX_BAR , int maxi, int trade_id);
 
 
     template <typename Map>
@@ -26,7 +29,7 @@ class OrderBook {
     void cancelOrder(int delete_id);
 
     template <typename maptype>
-    void helperMatchData(Order&order, maptype&oppositeBook);
+    void helperMatchData(Order&order, maptype&oppositeBook , OrderHistory & order_history);
 
     template <typename T>
     bool checkSign (Order &order , T& oppositeBook);
@@ -37,7 +40,11 @@ class OrderBook {
 
     void modify_order (int &modify_id , int &new_quantity);
 
+    void display_history();
+
     const Order * getDetails (int id) const;
+
+
 
 
 

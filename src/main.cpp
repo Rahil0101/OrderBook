@@ -18,14 +18,14 @@ using namespace std;
 
 int main() {
 
-    OrderBook orderBook(6,20,0);
+    OrderBook orderBook(6,20,0,0);
   
     while (true){
     bool flag = false;
     int side,delete_id,quantity , modify_id;
     char choice,order_type;
     
-    cout << "Select an option:\n1. View Orderbook\n2. Place Order\n3. Cancel Order\n4. Modify Order\n5. Exit\n";
+    cout << "Select an option:\n1. View Orderbook\n2. Place Order\n3. Cancel Order\n4. Modify Order\n5. View Order History\n6. Exit\n";
     cin>>choice;
     switch(choice) {
         case '1':
@@ -117,6 +117,10 @@ int main() {
             break;
         }
         case '5':
+
+            orderBook.display_history();
+            break;
+        case '6':
             cout << "Exiting...\n";
             flag = true;
             break;

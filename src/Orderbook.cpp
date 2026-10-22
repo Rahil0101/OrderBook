@@ -4,10 +4,12 @@
 
 #include "../include/Orderbook.hpp"
 
+#include "../include/OrderHistory.hpp"
+
 
 using namespace std;
 
-OrderBook::OrderBook(int order_id , int MAX_BAR , int maxi) : order_id(order_id) , MAX_BAR(MAX_BAR) , maxi(maxi) {
+OrderBook::OrderBook(int order_id , int MAX_BAR , int maxi , int trade_id) : order_id(order_id) , MAX_BAR(MAX_BAR) , maxi(maxi), trade_id(trade_id) {
 
             buyMap[100].push_back({1, 100, 30, Side::BUY,OrderType::LIMIT});
             buyMap[101].push_back({2, 101, 50, Side::BUY,OrderType::LIMIT});
@@ -86,11 +88,26 @@ OrderBook::OrderBook(int order_id , int MAX_BAR , int maxi) : order_id(order_id)
         }
 
         template <typename maptype>
-        void OrderBook::helperMatchData(Order&order, maptype&oppositeBook){
+        void OrderBook::helperMatchData(Order&order, maptype&oppositeBook , OrderHistory & order_history){
             auto it = oppositeBook.begin();
             int front = it->second.front().quantity;
+            
+            Trade trade;
+
+            int price = it->second.front().price;
+            int quantity = std::min(it->second.front().quantity , order.quantity);
+            chrono::system_clock::time_point timestamp = chrono::system_clock::now();
+            int buy_order_id = it->second.front().side == Side::BUY ? it->second.front().id : order.id;
+            int sell_order_id = it->second.front().side == Side::SELL ? it->second.front().id : order.id;
+
+            trade.set_trade(++trade_id , price , quantity , timestamp , buy_order_id , sell_order_id);
+
+            order_history.trade_add(trade);
+
+
                     if (front - order.quantity <= 0)
                     {
+
                         order.quantity = order.quantity - front;
                         deleteMap.erase(it->second.front().id);
                         it->second.pop_front();
@@ -105,6 +122,7 @@ OrderBook::OrderBook(int order_id , int MAX_BAR , int maxi) : order_id(order_id)
                         
                     }
         }
+
         template <typename T>
         bool OrderBook::checkSign (Order &order , T& oppositeBook)
         {
@@ -112,22 +130,25 @@ OrderBook::OrderBook(int order_id , int MAX_BAR , int maxi) : order_id(order_id)
             return order.side == Side::BUY ? order.price >= it->second.front().price : order.price <= it->second.front().price;
         }
 
+
+
         void OrderBook::processOrderCalculation(Order &order)
         {
         order.id = ++order_id;
+        OrderHistory order_history (order.id, order.side , order.order_type , order.quantity);
 
         if (order.side == Side::BUY){
             if (order.order_type == OrderType::MARKET){
                 while (!sellMap.empty() && order.quantity > 0)
                 {
-                    helperMatchData(order,sellMap);
+                    helperMatchData(order,sellMap , order_history);
                 }
                
             }
             else {
                 while (!sellMap.empty() && order.quantity > 0 && checkSign(order,sellMap))
                 {
-                    helperMatchData(order,sellMap);
+                    helperMatchData(order,sellMap , order_history);
                 }
 
                 if (order.quantity != 0)
@@ -145,14 +166,14 @@ OrderBook::OrderBook(int order_id , int MAX_BAR , int maxi) : order_id(order_id)
              if (order.order_type == OrderType::MARKET){
                 while (!buyMap.empty() && order.quantity > 0)
                 {
-                    helperMatchData(order,buyMap);
+                    helperMatchData(order,buyMap , order_history);
                 }
                
             }
         else {
                 while (!buyMap.empty() && order.quantity > 0 && checkSign(order,buyMap))
                 {
-                    helperMatchData(order,buyMap);
+                    helperMatchData(order,buyMap , order_history);
                 }
                 if (order.quantity != 0)
                 {
@@ -165,6 +186,7 @@ OrderBook::OrderBook(int order_id , int MAX_BAR , int maxi) : order_id(order_id)
             }
         }
 
+        history_map.insert({order_id, order_history});
 }
 
     tuple<int,int,Side> OrderBook::check_modify_id (int &modify_id)
@@ -202,6 +224,15 @@ OrderBook::OrderBook(int order_id , int MAX_BAR , int maxi) : order_id(order_id)
 
             return &(*it->second.it);
         } 
+    
+        void OrderBook::display_history()
+        {
+            for (auto it : history_map)
+            {
+                it.second.print();
+            }
+
+        }
 
 
         

@@ -6,7 +6,7 @@
 // A basic smoke test to verify the testing framework works.
 TEST(OrderBook, Unmatched_Buy_Sell_Orders)
 {
-    OrderBook orderBook(6 , 20, 90);
+    OrderBook orderBook(6 , 20, 90, 0);
 
     Order order{0, 98 , 70 , Side::BUY , OrderType::LIMIT};
 
