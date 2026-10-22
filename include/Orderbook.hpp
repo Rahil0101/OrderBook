@@ -13,15 +13,15 @@ class OrderBook {
     public:
 
 
-    OrderBook(int order_id , int MAX_BAR , int maxi){};
+    OrderBook(int order_id , int MAX_BAR , int maxi);
 
 
     template <typename Map>
-    void printHelper(Map &orderbook, int maxi , string color);
+    void printHelper(Map &orderbook, int maxi , std::string color);
     void print ();
 
     template <typename typemap>
-    void cancelOrderHelper(typemap &orderbook, unordered_map<int,DeleteDetails>::iterator it);
+    void cancelOrderHelper(typemap &orderbook, std::unordered_map<int,DeleteDetails>::iterator it);
 
     void cancelOrder(int delete_id);
 
@@ -33,9 +33,11 @@ class OrderBook {
 
     void processOrderCalculation(Order &order);
 
-    tuple<int,int,Side> check_modify_id (int &modify_id);
+    std::tuple<int,int,Side> check_modify_id (int &modify_id);
 
     void modify_order (int &modify_id , int &new_quantity);
+
+    const Order * getDetails (int id) const;
 
 
 

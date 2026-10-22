@@ -194,6 +194,16 @@ OrderBook::OrderBook(int order_id , int MAX_BAR , int maxi) : order_id(order_id)
         }
 
 
+
+        const Order* OrderBook::getDetails (int id)const
+        {
+            auto it = deleteMap.find(id);
+            if (it == deleteMap.end()) return nullptr;
+
+            return &(*it->second.it);
+        } 
+
+
         
 
 
