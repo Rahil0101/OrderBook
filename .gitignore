@@ -1,0 +1,17 @@
+# CMake build output
+build/
+cmake-build-*/
+
+# macOS
+.DS_Store
+
+# Compiled files
+*.o
+*.a
+*.dylib
+*.so
+*.dSYM/
+
+.vscode/
+
+.env
