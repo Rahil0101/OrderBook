@@ -5,6 +5,9 @@ project(OrderBook LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+
+find_package(Drogon CONFIG REQUIRED)
 # Your normal interactive application
 
 
@@ -29,6 +32,8 @@ add_library(orderbook_lib
 
 target_include_directories(orderbook_lib
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/application
+
 )
 
 add_executable(orderbook
@@ -36,7 +41,22 @@ add_executable(orderbook
 )
 
 
-target_link_libraries(orderbook PRIVATE orderbook_lib)
+target_link_libraries(orderbook PRIVATE orderbook_lib Drogon::Drogon)
+
+
+add_executable(orderbook_server
+    server/main.cpp
+    server/HealthController.cc
+    server/OrderController.cc
+    application/OrderService.cpp
+
+)
+
+target_link_libraries(orderbook_server
+    PRIVATE
+    orderbook_lib
+    Drogon::Drogon
+)
 
 # Automated tests
 enable_testing()
